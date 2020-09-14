@@ -1,0 +1,15 @@
+{
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json"
+  ],
+  "modules": {
+    "*": [
+          "./character_5x5",
+          "$(MODULES)/drivers/neopixel/*",
+          "$(MODULES)/drivers/neopixel/esp32/*"
+        ]
+  },
+  "preload": [
+		"neopixel"
+  ]
+}
