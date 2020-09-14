@@ -31,7 +31,7 @@ export default class NeoPixelText extends NeoPixel {
       Timer.delay(interval);
     }
   }
-  scrollText(text = "", color = this.#cRD, direction = "left", speed = "200") {
+  scrollText(text = "", color = this.#cRD, speed = "200", direction = "left") {
     text = " " + text;
     for (let p = 0; p < text.length; p++) {
       let c = text[p];
