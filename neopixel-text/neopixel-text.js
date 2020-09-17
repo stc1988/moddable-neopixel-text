@@ -52,7 +52,7 @@ export default class NeoPixelText extends NeoPixel {
       }, interval);
     });
   }
-  scrollText(text = "", color = this.#cRD, speed = "100", direction = "left") {
+  scrollText(text = "", color = this.#cRD, speed = "150", direction = "left") {
     this.stop();
     text = " " + text + " ";
     return new Promise((resolve, reject) => {
@@ -83,7 +83,7 @@ export default class NeoPixelText extends NeoPixel {
           }
           super.update();
 
-          if(t++ == 6) {
+          if(t++ == 5) {
             t = 0;
             if(p++ == text.length - 2) {
               resolve();
