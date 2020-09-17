@@ -15,5 +15,9 @@
 			"order": "#GRB",
 			"rmt_channel": "RMT_CHANNEL_0"
 		}
-	}
+  },
+  "platforms": {
+    "esp32/m5atom": {},
+    "...": { "error": "Platform not supported"}
+  }
 }
