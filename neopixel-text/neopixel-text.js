@@ -5,11 +5,13 @@ import characterTable from 'character_5x5';
 export default class NeoPixelText extends NeoPixel {
   #cBK
   #cRD
+  #textTimer
 
   constructor(dictionary) {
     super(dictionary);
     this.#cBK = super.makeRGB(0, 0, 0);
     this.#cRD = super.makeRGB(255, 0, 0);
+    this.#textTimer = {running:false, id:null};
     Timer.delay(100);
   }
   setCharacter(character = ' ', color = this.#cRD) {
@@ -22,42 +24,81 @@ export default class NeoPixelText extends NeoPixel {
     super.update();
   }
   setText(text = " ", color, duraioin = 500, interval = 100) {
-    for (let i = 0; i < text.length; i++) {
-      this.setCharacter(text[i], color);
-      Timer.delay(duraioin);
+    this.stop();
 
-      super.fill(this.#cBK);
-      super.update();
-      Timer.delay(interval);
-    }
-  }
-  scrollText(text = "", color = this.#cRD, speed = "200", direction = "left") {
-    text = " " + text;
-    for (let p = 0; p < text.length; p++) {
-      let c = text[p];
-      let n = (p != text.length - 1) ? text[p + 1] : " ";
-      let c_mtrx = characterTable[c.charCodeAt()];
-      let n_mtrx = characterTable[n.charCodeAt()];
+    return new Promise((resolve, reject) => {
+      let i = 0;
+      this.#textTimer.running = true;
+      this.#textTimer.id = Timer.repeat(id =>{
+        if(!this.#textTimer.running) {
+          reject();
+          Timer.clear(this.#textTimer.id);
+          this.#textTimer.id = null;
+          this.#textTimer.running = false;
+        } else {
+          this.setCharacter(text[i], color);
+          Timer.delay(duraioin);
+    
+          super.fill(this.#cBK);
+          super.update();
 
-      switch (direction) {
-        case "left":
-          for (let t = 0; t <= 5; t++) {
-            for (let i = 0; i < super.length; i++) {
-              if ((i % 5) == (5 - t)) {
-                super.setPixel(i, this.#cBK);
-              } else if ((i % 5) < (5 - t)) {
-                super.setPixel(i, ((c_mtrx << t) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
-              } else {
-                super.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
-              }
-            }
-            super.update();
-            Timer.delay(speed);
+          if(i++ == text.length) {
+            resolve();
+            Timer.clear(this.#textTimer.id);
+            this.#textTimer.id = null;
+            this.#textTimer.running = false;
           }
-          break;
-        default:
-          break;
-      }
+        }
+      }, interval);
+    });
+  }
+  scrollText(text = "", color = this.#cRD, speed = "100", direction = "left") {
+    this.stop();
+    text = " " + text + " ";
+    return new Promise((resolve, reject) => {
+      let p = 0;
+      let t = 0;
+      
+      this.#textTimer.running = true;
+      this.#textTimer.id = Timer.repeat(id =>{
+        if(!this.#textTimer.running) {
+          reject();
+          Timer.clear(this.#textTimer.id);
+          this.#textTimer.id = null;
+          this.#textTimer.running = false;
+        } else {
+          let c = text[p];
+          let n = text[p + 1];
+          let c_mtrx = characterTable[c.charCodeAt()];
+          let n_mtrx = characterTable[n.charCodeAt()];
+
+          for (let i = 0; i < super.length; i++) {
+            if ((i % 5) == (5 - t)) {
+              super.setPixel(i, this.#cBK);
+            } else if ((i % 5) < (5 - t)) {
+              super.setPixel(i, ((c_mtrx << t) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
+            } else {
+              super.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
+            }
+          }
+          super.update();
+
+          if(t++ == 6) {
+            t = 0;
+            if(p++ == text.length - 2) {
+              resolve();
+              Timer.clear(this.#textTimer.id);
+              this.#textTimer.id = null;
+              this.#textTimer.running = false;
+            }
+          }
+        }
+      }, speed);
+    });
+  }
+  stop() {
+    if(this.#textTimer.id) {
+      this.#textTimer.running = false;
     }
   }
 }
