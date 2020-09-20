@@ -6,9 +6,6 @@
   "modules": {
     "*": ["./*", "../../../neopixel-text/*"]
   },
-  "preload": [
-		"neopixel-text"
-  ],
   "defines": {
 		"neopixel": {
 			"length": 25,
