@@ -13,6 +13,14 @@ export default class NeoPixelText extends NeoPixel {
     this.#cRD = super.makeRGB(255, 0, 0);
     this.#textTimer = {running:false, id:null};
   }
+  #wait(ms) {
+    return new Promise(resolve => Timer.set(resolve, ms));
+  }
+  #timerClear() {
+    Timer.clear(this.#textTimer.id);
+    this.#textTimer.id = null;
+    this.#textTimer.running = false;
+  }
   setCharacter(character = ' ', color = this.#cRD) {
     let cp = character.charCodeAt();
     let matrix = characterTable[cp];
@@ -22,8 +30,11 @@ export default class NeoPixelText extends NeoPixel {
 
     super.update();
   }
-  setText(text = " ", color, duraioin = 500, interval = 100) {
-    this.stop();
+  async setText(text = " ", color, duraioin = 500, interval = 100) {
+    if(this.#textTimer.id) {
+      this.#timerClear();
+      await this.#wait(interval);
+    }
 
     return new Promise((resolve, reject) => {
       let i = 0;
@@ -31,9 +42,7 @@ export default class NeoPixelText extends NeoPixel {
       this.#textTimer.id = Timer.repeat(id =>{
         if(!this.#textTimer.running) {
           reject();
-          Timer.clear(this.#textTimer.id);
-          this.#textTimer.id = null;
-          this.#textTimer.running = false;
+          this.#timerClear();
         } else {
           this.setCharacter(text[i], color);
           Timer.delay(duraioin);
@@ -43,16 +52,18 @@ export default class NeoPixelText extends NeoPixel {
 
           if(i++ == text.length) {
             resolve();
-            Timer.clear(this.#textTimer.id);
-            this.#textTimer.id = null;
-            this.#textTimer.running = false;
+            this.#timerClear();
           }
         }
       }, interval);
     });
   }
-  scrollText(text = "", color = this.#cRD, speed = "150", direction = "left") {
-    this.stop();
+  async scrollText(text = "", color = this.#cRD, speed = "150", direction = "left") {
+    if(this.#textTimer.id) {
+      this.#timerClear();
+      await this.#wait(speed);
+    }
+
     text = " " + text + " ";
     return new Promise((resolve, reject) => {
       let p = 0;
@@ -62,9 +73,7 @@ export default class NeoPixelText extends NeoPixel {
       this.#textTimer.id = Timer.repeat(id =>{
         if(!this.#textTimer.running) {
           reject();
-          Timer.clear(this.#textTimer.id);
-          this.#textTimer.id = null;
-          this.#textTimer.running = false;
+          this.#timerClear();
         } else {
           let c = text[p];
           let n = text[p + 1];
@@ -86,9 +95,7 @@ export default class NeoPixelText extends NeoPixel {
             t = 0;
             if(p++ == text.length - 2) {
               resolve();
-              Timer.clear(this.#textTimer.id);
-              this.#textTimer.id = null;
-              this.#textTimer.running = false;
+              this.#timerClear();
             }
           }
         }
