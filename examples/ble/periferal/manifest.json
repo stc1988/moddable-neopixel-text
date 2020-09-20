@@ -1,0 +1,29 @@
+{
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/modules/network/ble/manifest_server.json"
+  ],
+  "modules": {
+    "*": ["./*", "../../../neopixel-text/*"]
+  },
+  "preload": [
+		"neopixel-text"
+  ],
+  "defines": {
+		"neopixel": {
+			"length": 25,
+			"pin": 27,
+			"order": "#GRB",
+			"rmt_channel": "RMT_CHANNEL_0"
+		}
+  },
+  "ble": {
+		"*": [
+			"./bleservices/*"
+		]
+	},
+  "platforms": {
+    "esp32/m5atom": {},
+    "...": { "error": "Platform not supported"}
+  }
+}
