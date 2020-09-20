@@ -12,7 +12,6 @@ export default class NeoPixelText extends NeoPixel {
     this.#cBK = super.makeRGB(0, 0, 0);
     this.#cRD = super.makeRGB(255, 0, 0);
     this.#textTimer = {running:false, id:null};
-    Timer.delay(100);
   }
   setCharacter(character = ' ', color = this.#cRD) {
     let cp = character.charCodeAt();
