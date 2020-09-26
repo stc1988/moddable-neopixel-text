@@ -5,16 +5,8 @@
   "modules": {
     "*": ["./main", "../../neopixel-text/*"]
   },
-  "defines": {
-		"neopixel": {
-			"length": 25,
-			"pin": 27,
-			"order": "#GRB",
-			"rmt_channel": "RMT_CHANNEL_0"
-		}
-  },
   "platforms": {
-    "esp32/m5atom": {},
+    "esp32/m5atom_matrix": {},
     "...": { "error": "Platform not supported"}
   }
 }
