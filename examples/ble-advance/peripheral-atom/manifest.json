@@ -1,0 +1,18 @@
+{
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/modules/network/ble/manifest_server.json"
+  ],
+  "modules": {
+    "*": ["./*", "../../../neopixel-text/*"]
+  },
+  "ble": {
+		"*": [
+			"./bleservices/*"
+		]
+	},
+  "platforms": {
+    "esp32/m5atom_matrix": {},
+    "...": { "error": "Platform not supported"}
+  }
+}

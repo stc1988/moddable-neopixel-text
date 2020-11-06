@@ -1,0 +1,14 @@
+{
+	"service": {
+		"uuid": "3369dff5-f425-4af4-9821-64f2cb52369e",
+		"characteristics": {
+            "text": {
+                "uuid": "f4c36543-c8d0-452c-ad1f-994ccd5ac4a2",
+                "maxBytes": 512,
+                "type": "string",
+                "permissions": "read,write",
+                "properties": "read,write,notify"
+            }
+		}
+	}
+}
