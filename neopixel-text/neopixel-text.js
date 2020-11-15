@@ -31,43 +31,61 @@ export default class NeoPixelText {
 
     neopixel.update();
   }
-  async setText(text = " ", color, duraioin = 500, interval = 100) {
+  async setText(text = " ", dictionary) {
     let neopixel = this.#neopixel;
+    let options = {
+      color: this.#cRD,
+      duration: 500,
+      interval: 100,
+      loop: false,
+      ...dictionary,
+    }
+
+    // If this function called while running, stop running and wait until stop complete. 
     if(this.#textTimer.id) {
       this.#timerClear();
-      await this.#wait(interval);
+      await this.#wait(options.interval);
     }
 
     return new Promise((resolve, reject) => {
-      let i = 0;
+      let count = 0;
       this.#textTimer.running = true;
       this.#textTimer.id = Timer.repeat(id =>{
         if(!this.#textTimer.running) {
           reject();
           this.#timerClear();
         } else {
-          this.setCharacter(text[i], color);
-          Timer.delay(duraioin);
+          this.setCharacter(text[count], options.color);
+          Timer.delay(options.duration);
     
           neopixel.fill(this.#cBK);
           neopixel.update();
 
-          if(i++ == text.length) {
+          if(count++ == text.length) {
             resolve();
             this.#timerClear();
           }
         }
-      }, interval);
+      }, options.interval);
     });
   }
-  async scrollText(text = "", color = this.#cRD, speed = "150", direction = "left") {
+  async scrollText(text = "", dictionary) {
     let neopixel = this.#neopixel;
+    let options = {
+      color: this.#cRD,
+      speed: 500,
+      direction: "left",
+      loop: false,
+      ...dictionary,
+    }
+    text = ` ${text} `;
+
+    // If this function called while running, stop running and wait until stop complete.
     if(this.#textTimer.id) {
       this.#timerClear();
-      await this.#wait(speed);
+      await this.#wait(options.speed);
     }
 
-    text = " " + text + " ";
     return new Promise((resolve, reject) => {
       let p = 0;
       let t = 0;
@@ -87,9 +105,9 @@ export default class NeoPixelText {
             if ((i % 5) == (5 - t)) {
               neopixel.setPixel(i, this.#cBK);
             } else if ((i % 5) < (5 - t)) {
-              neopixel.setPixel(i, ((c_mtrx << t) >> (neopixel.length - 1 - i) & 1) ? color : this.#cBK);
+              neopixel.setPixel(i, ((c_mtrx << t) >> (neopixel.length - 1 - i) & 1) ? options.color : this.#cBK);
             } else {
-              neopixel.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (neopixel.length - 1 - i) & 1) ? color : this.#cBK);
+              neopixel.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (neopixel.length - 1 - i) & 1) ? options.color : this.#cBK);
             }
           }
           neopixel.update();
@@ -102,7 +120,7 @@ export default class NeoPixelText {
             }
           }
         }
-      }, speed);
+      }, options.speed);
     });
   }
   stop() {
