@@ -1,17 +1,17 @@
-import NeoPixel from 'neopixel';
 import Timer from 'timer';
 import characterTable from 'character_5x5';
 
-export default class NeoPixelText extends NeoPixel {
+export default class NeoPixelText {
+  #neopixel
   #cBK
   #cRD
   #textTimer
 
-  constructor(dictionary) {
-    super(dictionary);
-    this.#cBK = super.makeRGB(0, 0, 0);
-    this.#cRD = super.makeRGB(255, 0, 0);
-    this.#textTimer = {running:false, id:null};
+  constructor(neopixel) {
+    this.#neopixel = neopixel;
+    this.#cBK = neopixel.makeRGB(0, 0, 0);
+    this.#cRD = neopixel.makeRGB(255, 0, 0);
+    this.#textTimer = {running: false, id: null};
   }
   #wait(ms) {
     return new Promise(resolve => Timer.set(resolve, ms));
@@ -22,15 +22,17 @@ export default class NeoPixelText extends NeoPixel {
     this.#textTimer.running = false;
   }
   setCharacter(character = ' ', color = this.#cRD) {
+    let neopixel = this.#neopixel
     let cp = character.charCodeAt();
     let matrix = characterTable[cp];
-    for (let i = 0; i < super.length; i++) {
-      super.setPixel(i, (matrix >> (super.length - 1 - i) & 1) ? color : this.#cBK);
+    for (let i = 0; i < neopixel.length; i++) {
+      neopixel.setPixel(i, (matrix >> (neopixel.length - 1 - i) & 1) ? color : this.#cBK);
     }
 
-    super.update();
+    neopixel.update();
   }
   async setText(text = " ", color, duraioin = 500, interval = 100) {
+    let neopixel = this.#neopixel;
     if(this.#textTimer.id) {
       this.#timerClear();
       await this.#wait(interval);
@@ -47,8 +49,8 @@ export default class NeoPixelText extends NeoPixel {
           this.setCharacter(text[i], color);
           Timer.delay(duraioin);
     
-          super.fill(this.#cBK);
-          super.update();
+          neopixel.fill(this.#cBK);
+          neopixel.update();
 
           if(i++ == text.length) {
             resolve();
@@ -59,6 +61,7 @@ export default class NeoPixelText extends NeoPixel {
     });
   }
   async scrollText(text = "", color = this.#cRD, speed = "150", direction = "left") {
+    let neopixel = this.#neopixel;
     if(this.#textTimer.id) {
       this.#timerClear();
       await this.#wait(speed);
@@ -80,16 +83,16 @@ export default class NeoPixelText extends NeoPixel {
           let c_mtrx = characterTable[c.charCodeAt()];
           let n_mtrx = characterTable[n.charCodeAt()];
 
-          for (let i = 0; i < super.length; i++) {
+          for (let i = 0; i < neopixel.length; i++) {
             if ((i % 5) == (5 - t)) {
-              super.setPixel(i, this.#cBK);
+              neopixel.setPixel(i, this.#cBK);
             } else if ((i % 5) < (5 - t)) {
-              super.setPixel(i, ((c_mtrx << t) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
+              neopixel.setPixel(i, ((c_mtrx << t) >> (neopixel.length - 1 - i) & 1) ? color : this.#cBK);
             } else {
-              super.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (super.length - 1 - i) & 1) ? color : this.#cBK);
+              neopixel.setPixel(i, ((n_mtrx >> (5 - t + 1)) >> (neopixel.length - 1 - i) & 1) ? color : this.#cBK);
             }
           }
-          super.update();
+          neopixel.update();
 
           if(t++ == 5) {
             t = 0;

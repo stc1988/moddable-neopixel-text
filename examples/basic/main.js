@@ -1,6 +1,6 @@
 import NeoPixelText from 'neopixel-text';
 
-let led = new NeoPixelText({});
+let npt = new NeoPixelText(global.lights);
 
 const str = "HELLOWORLD";
 let running  = false;
@@ -8,7 +8,7 @@ let running  = false;
 function scrollText(str) {
     running = true;
     trace("start\n");
-    led.scrollText(str).then(
+    npt.scrollText(str).then(
         () => {
             trace("done\n");
             running = false
@@ -24,7 +24,7 @@ global.button.a.onChanged = function () {
     const v = this.read();
     if(v){
         if(running){
-            led.stop();
+            npt.stop();
         } else {
             scrollText(str);
         }
