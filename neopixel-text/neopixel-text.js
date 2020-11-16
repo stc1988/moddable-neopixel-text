@@ -62,8 +62,12 @@ export default class NeoPixelText {
           neopixel.update();
 
           if(count++ == text.length) {
-            resolve();
-            this.#timerClear();
+            if(options.loop) {
+              count = 0;
+            } else {
+              resolve();
+              this.#timerClear();
+            }
           }
         }
       }, options.interval);
@@ -115,8 +119,12 @@ export default class NeoPixelText {
           if(t++ == 5) {
             t = 0;
             if(p++ == text.length - 2) {
-              resolve();
-              this.#timerClear();
+              if(options.loop){
+                p = 0;
+              } else {
+                resolve();
+                this.#timerClear();
+              }
             }
           }
         }
